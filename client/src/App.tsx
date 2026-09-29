@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { loadProject, saveProject } from './api';
+import { BatchPanel } from './BatchPanel';
 import { CrewPanel } from './CrewPanel';
 import { GraphCanvas, Selection } from './GraphCanvas';
 import { ReplanPanel } from './ReplanPanel';
@@ -142,6 +143,9 @@ export default function App() {
   useEffect(() => {
     if (sim.state !== 'paused') setReplanOpen(false);
   }, [sim.state]);
+
+  // 多行口令批量录入：确认前仅预览，确认后沿现有编辑链整批写入并重算、持久化
+  const [batchOpen, setBatchOpen] = useState(false);
 
   // 执行复盘：结束或暂停时可查看；模拟进行中或重置后（无快照）自动关闭
   const [reviewOpen, setReviewOpen] = useState(false);
@@ -403,6 +407,12 @@ export default function App() {
       <header className="toolbar">
         <h1>舞台换景口令沙盘</h1>
         <button onClick={addNode}>＋ 添加口令</button>
+        <button
+          title="粘贴多行口令清单（行号 名称 时长 用人数 前置:等待秒…），预览口令、约束与总工期变化后整批写入"
+          onClick={() => setBatchOpen(true)}
+        >
+          📋 批量录入
+        </button>
         <span className="sep" />
         {sim.state === 'idle' || sim.state === 'finished' ? (
           <button className="primary" disabled={!canStart} onClick={sim.start}>
@@ -564,6 +574,18 @@ export default function App() {
             setReplanOpen(false);
           }}
           onClose={() => setReplanOpen(false)}
+        />
+      )}
+
+      {batchOpen && (
+        <BatchPanel
+          project={project}
+          onConfirm={(apply) => {
+            // 沿现有编辑链整批写入：重算排程并防抖持久化
+            update(apply);
+            setBatchOpen(false);
+          }}
+          onClose={() => setBatchOpen(false)}
         />
       )}
 

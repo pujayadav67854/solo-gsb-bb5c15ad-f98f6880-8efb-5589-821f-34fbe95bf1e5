@@ -143,6 +143,7 @@ export function SidePanel(props: SidePanelProps) {
       <h3>操作说明</h3>
       <ul className="help">
         <li>点击工具栏「添加口令」新建口令节点</li>
+        <li>工具栏「批量录入」可粘贴多行清单（行号 名称 时长 用人数 前置:等待秒…），预览后整批写入</li>
         <li>拖动脉口令右侧圆点到另一口令，建立前置约束</li>
         <li>点击口令或约束线进行选中与编辑</li>
         <li>拖动空白处平移，滚轮缩放</li>
