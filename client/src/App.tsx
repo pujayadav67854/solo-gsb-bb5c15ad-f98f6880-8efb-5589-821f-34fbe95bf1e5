@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { loadProject, saveProject } from './api';
+import { BulkImportDialog } from './BulkImportDialog';
 import { CrewPanel } from './CrewPanel';
 import { GraphCanvas, Selection } from './GraphCanvas';
 import { ReplanPanel } from './ReplanPanel';
@@ -375,6 +376,21 @@ export default function App() {
     [update],
   );
 
+  // 多行口令批量导入：确认时沿现有编辑链整批写入（防抖保存、实时重算排程）
+  const [bulkOpen, setBulkOpen] = useState(false);
+  const commitBulkImport = useCallback(
+    (newNodes: Project['nodes'], newEdges: Project['edges']) => {
+      update((p) => ({
+        ...p,
+        nodes: [...p.nodes, ...newNodes],
+        edges: [...p.edges, ...newEdges],
+      }));
+      setBulkOpen(false);
+      setSelection(newNodes.length > 0 ? { type: 'node', id: newNodes[0].id } : null);
+    },
+    [update],
+  );
+
   if (loadError) {
     return <div className="boot-message">加载失败：{loadError}</div>;
   }
@@ -403,6 +419,12 @@ export default function App() {
       <header className="toolbar">
         <h1>舞台换景口令沙盘</h1>
         <button onClick={addNode}>＋ 添加口令</button>
+        <button
+          title="粘贴多行清单批量导入口令与前置约束；先预览生成结果与总工期变化，确认后整批写入"
+          onClick={() => setBulkOpen(true)}
+        >
+          ⧉ 批量导入
+        </button>
         <span className="sep" />
         {sim.state === 'idle' || sim.state === 'finished' ? (
           <button className="primary" disabled={!canStart} onClick={sim.start}>
@@ -575,6 +597,14 @@ export default function App() {
           result={cycle ? null : review}
           cycle={cycle}
           onClose={() => setReviewOpen(false)}
+        />
+      )}
+
+      {bulkOpen && (
+        <BulkImportDialog
+          project={project}
+          onConfirm={commitBulkImport}
+          onClose={() => setBulkOpen(false)}
         />
       )}
     </div>

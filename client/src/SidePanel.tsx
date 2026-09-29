@@ -389,8 +389,20 @@ function Delta({ value }: { value: number }) {
 }
 
 /** 成环路径：沿环上的边从首个节点开始走完一环。 */
-export function CyclePath({ project, cycle }: { project: Project; cycle: CycleInfo }) {
-  const nodeById = new Map(project.nodes.map((n) => [n.id, n]));
+export function CyclePath({
+  project,
+  cycle,
+  nodes,
+  edges,
+}: {
+  project: Project;
+  cycle: CycleInfo;
+  /** 可选覆盖集合（如批量导入合并后的内存图）：优先用于名称与边解析 */
+  nodes?: Project['nodes'];
+  edges?: Project['edges'];
+}) {
+  const nodeById = new Map((nodes ?? project.nodes).map((n) => [n.id, n]));
+  const allEdges = edges ?? project.edges;
   const edgeSet = new Set(cycle.edgeIds);
   const name = (id: string) => nodeById.get(id)?.name ?? id;
 
@@ -400,7 +412,7 @@ export function CyclePath({ project, cycle }: { project: Project; cycle: CycleIn
     chain.push(start);
     let cur = start;
     for (let i = 0; i < cycle.edgeIds.length; i++) {
-      const e = project.edges.find((ed) => edgeSet.has(ed.id) && ed.from === cur);
+      const e = allEdges.find((ed) => edgeSet.has(ed.id) && ed.from === cur);
       if (!e) break;
       chain.push(e.to);
       cur = e.to;

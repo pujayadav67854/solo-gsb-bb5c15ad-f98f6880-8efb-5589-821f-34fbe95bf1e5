@@ -705,6 +705,43 @@ button.danger { background: transparent; border-color: var(--red); color: var(--
 .replan-actions button { padding: 5px 18px; }
 .delta-down { color: var(--green); font-size: 11px; }
 
+/* ---------- 批量导入 ---------- */
+.bulk-dialog { width: min(860px, calc(100vw - 48px)); }
+.bulk-dialog code {
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 0 4px;
+  font-size: 11px;
+}
+.bulk-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  background: var(--panel-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.bulk-textarea:focus { outline: 1px solid var(--accent); }
+.bulk-table { font-size: 11px; }
+.bulk-table tr.bulk-row-err td { background: rgba(224, 80, 80, 0.08); }
+.bulk-table .bulk-err-cell { color: var(--red); }
+.bulk-prereq {
+  display: inline-block;
+  margin: 1px 4px 1px 0;
+  padding: 0 5px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.bulk-prereq-miss { color: var(--red); border-color: var(--red); }
+
 /* ---------- 执行复盘 ---------- */
 .review-overlay {
   position: fixed;
